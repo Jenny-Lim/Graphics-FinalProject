@@ -11,7 +11,7 @@
 
 // Source.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
+//hello
 #define FILENAME "img.tif"
 
 #include <stdlib.h>
