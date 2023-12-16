@@ -11,7 +11,11 @@
 
 // Source.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-//hello
+
+// hello
+
+// Jenny Lim (6978118), Patrick Leonard (stud#)
+
 #define FILENAME "img.tif"
 
 #include <stdlib.h>
@@ -19,46 +23,66 @@
 #include <malloc.h>
 #include <freeglut.h>
 #include <FreeImage.h>
+#include <iostream>
 
 int a[3] = { 10,10,10 }, b[3] = { 10,-10,10 }, c[3] = { -10,-10,10 }, d[3] = { -10,10,10 },
 e[3] = { 10,10,-10 }, f[3] = { 10,-10,-10 }, g[3] = { -10,-10,-10 }, h[3] = { -10,10,-10 };
 
-float angle = 0.0;
+//float angle = 0.0;
+float pos = 0.0;
 
 void drawcube(void) {
-
-    glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1.0, 1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3iv(a);
+    glVertex3iv(b);
+    glVertex3iv(c);
+    glVertex3iv(d);
+    glEnd();
+    glBegin(GL_LINE_LOOP);
+    glVertex3iv(a);
+    glVertex3iv(e);
+    glVertex3iv(f);
+    glVertex3iv(b);
+    glEnd();
+    glBegin(GL_LINE_LOOP);
+    glVertex3iv(d);
+    glVertex3iv(h);
+    glVertex3iv(g);
+    glVertex3iv(c);
+    glEnd();
+    glBegin(GL_LINE_LOOP);
+    glVertex3iv(e);
+    glVertex3iv(f);
+    glVertex3iv(g);
+    glVertex3iv(h);
+    glEnd();
+    glFlush();
+} // drawcube
+
+void draw() {
+    Sleep(10);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
-    glRotatef(angle, 0.0, 1.0, 0.0);
-    glBegin(GL_LINE_LOOP);
-    glVertex3iv(a);
-    glVertex3iv(b);
-    glVertex3iv(c);
-    glVertex3iv(d);
-    glEnd();
-    glBegin(GL_LINE_LOOP);
-    glVertex3iv(a);
-    glVertex3iv(e);
-    glVertex3iv(f);
-    glVertex3iv(b);
-    glEnd();
-    glBegin(GL_LINE_LOOP);
-    glVertex3iv(d);
-    glVertex3iv(h);
-    glVertex3iv(g);
-    glVertex3iv(c);
-    glEnd();
-    glBegin(GL_LINE_LOOP);
-    glVertex3iv(e);
-    glVertex3iv(f);
-    glVertex3iv(g);
-    glVertex3iv(h);
-    glEnd();
+
+    if (GetKeyState('A') & 0x8000) { // hold key to move - this aint exactly it
+        pos = pos - 0.01;
+    }
+    else if (GetKeyState('D') & 0x8000) {
+        pos = pos + 0.01;
+    }
+
+    glPushMatrix();
+    //glRotatef(angle, 0.0, 1.0, 0.0);
+    glTranslatef(pos, 0, 0);
+    drawcube();
+    glPopMatrix();
+    
     glutSwapBuffers();
-    glFlush();
-}
+} // draw
 
 void keyboard(unsigned char key, int x, int y) {
 
@@ -69,34 +93,48 @@ void keyboard(unsigned char key, int x, int y) {
         exit(0);
         break;
     }
-}
+} // keyboard
 
 void mouse(int btn, int state, int x, int y) {
 
-    printf("%3d, %3d, %f\n", btn, state, angle);
     if (state == GLUT_DOWN) {
         if (btn == GLUT_LEFT_BUTTON) {
-            angle = angle + 1.0;
+            // shoot
+            std::cout << "shot" << std::endl;
         }
         else if (btn == GLUT_RIGHT_BUTTON) {
-            angle = angle - 1.0;
-        }
-        else {
-            angle = 0.0;
+            // idk
         }
     }
-}
+} // mouse
+
+void movement(int key, int x, int y) { // this aint exactly it
+    switch (key)
+    {
+    case GLUT_KEY_LEFT:
+        pos = pos - 1;
+        break;
+    case GLUT_KEY_RIGHT:
+        pos = pos + 1;
+        break;
+    }
+    glutPostRedisplay();
+} // movement
 
 int main(int argc, char** argv) {
 
     glutInit(&argc, argv);
     glutInitWindowSize(500, 500);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-    glutCreateWindow("Glut rotate");
+    glutCreateWindow("Asteroid Shooter");
+
+    //glutSpecialFunc(movement);
+
     glutMouseFunc(mouse);
     glutKeyboardFunc(keyboard);
-    glutDisplayFunc(drawcube);
-    glutIdleFunc(drawcube);
+
+    glutDisplayFunc(draw);
+    glutIdleFunc(draw);
 
     glMatrixMode(GL_PROJECTION);
     glOrtho(-30.0, 30.0, -30.0, 30.0, -30.0, 30.0);
@@ -106,5 +144,4 @@ int main(int argc, char** argv) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
     glutMainLoop();
-}
-
+} // main
