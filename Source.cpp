@@ -238,7 +238,7 @@ void draw() {
     for (int i = 0; i < asteroids.size(); i++) {
         asteroid* a = &asteroids.at(i);
 
-        if (a->pos.y <= -500) {
+        if (a->pos.y <= -1 * glutGet(GLUT_WINDOW_HEIGHT)) {
             asteroids.erase(asteroids.begin() + i);
         }
 
