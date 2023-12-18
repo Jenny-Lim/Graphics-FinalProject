@@ -57,6 +57,25 @@ void drawasteroid() {
     glFlush();
 } // drawasteroid
 
+//bool Collision2D::BoxCircleCheck(Box2D box, Circle circle)
+//{
+//    Vector2 distance = circle.center - box.center;
+//
+//    // check the x axis distance
+//    if (fabsf(distance.x) > (box.extents.x + circle.radius))
+//        return false;
+//
+//    // check the y axis distance
+//    if (fabsf(distance.y) > (box.extents.y + circle.radius))
+//        return false;
+//
+//    // straight line distance from 
+//    if (distance.Length() > (box.extents.Length() + circle.radius))
+//        return false;
+//
+//    return true;
+//}
+
 void draw() {
     Sleep(10);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -88,6 +107,12 @@ void draw() {
     glPopMatrix();
 
     angle++;
+
+    //if (Collision2D::BoxCircleCheck(paddleCollision, ballCollision)) {
+    //    ballCollision.center -= ballVelocity * deltaTime;
+    //    pos = Collision2D::ReflectCircleBox(ballCollision, ballVelocity, deltaTime, paddleCollision);
+    //    ballSprite.SetPosition(pos);
+    //}
     
     glutSwapBuffers();
 } // draw
