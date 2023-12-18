@@ -12,8 +12,6 @@
 // Source.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-// hello
-
 // Jenny Lim (6978118), Patrick Leonard (stud#)
 
 #define _USE_MATH_DEFINES
@@ -68,16 +66,18 @@ struct bullet {
     vector pos;
     float speed;
     float angle;
+    bool rotPos;
 
     bullet() {
         // default
     }
 
-    bullet(vector _pos, float _speed, float _angle)
+    bullet(vector _pos, float _speed, float _angle, int _rotPos)
     {
         pos = _pos;
         speed = _speed;
         angle = _angle;
+        rotPos = _rotPos;
     }
 }; // bullet
 
@@ -151,7 +151,10 @@ void createbullet() {
     float speed = 1;
     float angle = 0;
 
-    b = { pos, speed, angle };
+    bool rotPos = (int)randomfloat(0,2);
+    std::cout << rotPos << std::endl;
+
+    b = { pos, speed, angle, rotPos };
     bullets.push_back(b);
 } // createbullet
 
@@ -225,11 +228,18 @@ void draw() {
         }
 
         b->pos.y += b->speed;
-        b->angle += b->speed;
+
+        // some rotate the other way
+        if (b->rotPos) {
+            b->angle += b->speed;
+        }
+        else {
+            b->angle -= b->speed;
+        }
 
         glPushMatrix();
         glTranslatef(b->pos.x + bulletSize/2, b->pos.y, 0); // + half bulletSize for centering
-        glRotatef(b->angle, 0, 0, 1); // maybe have some rotate the other way
+        glRotatef(b->angle, 0, 0, 1);
         drawsquare(bulletSize);
         glPopMatrix();
     }
