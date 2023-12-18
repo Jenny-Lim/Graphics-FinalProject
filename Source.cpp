@@ -64,26 +64,46 @@ struct asteroid{
     }
 }; // asteroid
 
+struct bullet {
+    vector pos;
+    float speed;
+    float angle;
+
+    bullet() {
+        // default
+    }
+
+    bullet(vector _pos, float _speed, float _angle)
+    {
+        pos = _pos;
+        speed = _speed;
+        angle = _angle;
+    }
+}; // bullet
+
 // player variables
 float playerSpeed = 1;
-float xpos = 0.0;
-float ypos = 0.0;
-float startingPos = -200;
+float xpos = 240;
+float ypos = 20;
+int shipSize = 20;
 
 // asteroid variables
 int maxAsteroids = 20;
-int lifetime = 400;
 std::vector<asteroid> asteroids;
 
-void drawship() {
+// bullet variables
+int bulletSize = 10;
+std::vector<bullet> bullets;
+
+void drawsquare(int size) {
     glColor3f(1.0, 1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
 
     glBegin(GL_POLYGON);
-    glVertex2i(240, 240);
-    glVertex2i(240, 260);
-    glVertex2i(260, 260);
-    glVertex2i(260, 240);
+    glVertex2i(0, 0);
+    glVertex2i(0, size);
+    glVertex2i(size, size);
+    glVertex2i(size, 0);
 
     glEnd();
     glFlush();
@@ -124,7 +144,18 @@ float randomfloat(int min, int max) {
     return (float)rand() / RAND_MAX * (max - min) + min;
 } // randomfloat
 
-void createAsteroid(){
+void createbullet() {
+    bullet b;
+
+    vector pos = { xpos, ypos, 0 };
+    float speed = 1;
+    float angle = 0;
+
+    b = { pos, speed, angle };
+    bullets.push_back(b);
+} // createbullet
+
+void createasteroid(){
     asteroid a;
 
     vector color{ randomfloat(0, 1), randomfloat(0, 1), randomfloat(0, 1) };
@@ -158,12 +189,12 @@ void draw() {
 
     //player
     glPushMatrix();
-    glTranslatef(xpos, startingPos + ypos, 0);
-    drawship();
+    glTranslatef(xpos, ypos, 0);
+    drawsquare(shipSize);
     glPopMatrix();
 
     if (asteroids.size() < maxAsteroids) {
-        createAsteroid();
+        createasteroid();
     }
     
     // draw asteroids
@@ -182,6 +213,24 @@ void draw() {
         glRotatef(a->angle, 0, 0, 1);
         glScalef(a->size, a->size, a->size);
         drawasteroid(a->color);
+        glPopMatrix();
+    }
+
+    // draw bullets
+    for (int i = 0; i < bullets.size(); i++) {
+        bullet* b = &bullets.at(i);
+
+        if (b->pos.y >= 500) {
+            bullets.erase(bullets.begin() + i);
+        }
+
+        b->pos.y += b->speed;
+        b->angle += b->speed;
+
+        glPushMatrix();
+        glTranslatef(b->pos.x + bulletSize/2, b->pos.y, 0); // + half bulletSize for centering
+        glRotatef(b->angle, 0, 0, 1); // maybe have some rotate the other way
+        drawsquare(bulletSize);
         glPopMatrix();
     }
 
@@ -211,6 +260,7 @@ void mouse(int btn, int state, int x, int y) {
         if (btn == GLUT_LEFT_BUTTON) {
             // shoot
             std::cout << "shot" << std::endl;
+            createbullet();
         }
         else if (btn == GLUT_RIGHT_BUTTON) {
             // idk
