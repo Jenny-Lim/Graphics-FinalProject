@@ -115,7 +115,7 @@ void drawasteroid(vector color) {
 
     glBegin(GL_POLYGON);
     for (int i = 0; i < 6; i++) {
-        glVertex2f(sin(i / 6.0 * 2 * M_PI) * 10, cos(i / 6.0 * 2 * M_PI) * 10);
+        glVertex2f(sin(i / 6.0 * 2 * M_PI), cos(i / 6.0 * 2 * M_PI));
     }
     glEnd();
     glFlush();
@@ -162,9 +162,9 @@ void createasteroid(){
     asteroid a;
 
     vector color{ randomfloat(0, 1), randomfloat(0, 1), randomfloat(0, 1) };
-    vector pos = { randomfloat(0, 500), 510, 0 }; // 510 -- above the screen
+    vector pos = { randomfloat(0, (float)glutGet(GLUT_WINDOW_WIDTH)), (float)glutGet(GLUT_WINDOW_HEIGHT)+10, 0 }; // 510 -- above the screen
     float speed = randomfloat(1, 10);
-    float size = randomfloat(1, 3);
+    float size = randomfloat(10, 30);
     float angle = 0;
 
     a = { pos, speed, color, size, angle};
