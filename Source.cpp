@@ -157,7 +157,7 @@ vector getextents(float angle, float right, float left, float top, float bottom)
 
 bool boxcirclecollision(vector boxExtents, float radius, vector boxPos, vector circlePos)
 {
-    vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, circlePos.z - boxPos.z }; // centers are the objects position
+    vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, 0 }; // centers are the objects position
 
     // check the x axis distance
     if (fabsf(distance.x) > (boxExtents.x + radius))
@@ -245,8 +245,8 @@ void draw() {
         a->pos.y -= a->speed; // move down
         a->angle += a->speed; // rotate
 
-        //player, asteroid -- do similar for bullets / asteroids -- only works at a certain ypos
-        if (boxcirclecollision(getextents(0, xpos + xpos / 2, xpos / 2, ypos + ypos / 2, ypos / 2), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
+        //player, asteroid -- do similar for bullets / asteroids -- i was dum
+        if (boxcirclecollision(getextents(0, 20, 0, 20, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
             //decr health
             health--;
             std::cout << "health: " << health << std::endl;
