@@ -68,16 +68,16 @@ void draw() {
 
     glMatrixMode(GL_MODELVIEW);
 
-    if (GetKeyState('A') & 0x8000) { // hold key to move - this aint exactly it
-        pos = pos - 0.01;
+    if (GetKeyState('A') & 0x8000) { // hold key to move - works now
+        pos = pos - 0.1;
     }
-    else if (GetKeyState('D') & 0x8000) {
-        pos = pos + 0.01;
+    if (GetKeyState('D') & 0x8000) {
+        pos = pos + 0.1;
     }
 
     glPushMatrix();
     //glRotatef(angle, 0.0, 1.0, 0.0);
-    glTranslatef(pos, 0, 0);
+    glTranslatef(pos, -10, 0);
     drawcube();
     glPopMatrix();
     
@@ -108,27 +108,12 @@ void mouse(int btn, int state, int x, int y) {
     }
 } // mouse
 
-void movement(int key, int x, int y) { // this aint exactly it
-    switch (key)
-    {
-    case GLUT_KEY_LEFT:
-        pos = pos - 1;
-        break;
-    case GLUT_KEY_RIGHT:
-        pos = pos + 1;
-        break;
-    }
-    glutPostRedisplay();
-} // movement
-
 int main(int argc, char** argv) {
 
     glutInit(&argc, argv);
     glutInitWindowSize(500, 500);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutCreateWindow("Asteroid Shooter");
-
-    //glutSpecialFunc(movement);
 
     glutMouseFunc(mouse);
     glutKeyboardFunc(keyboard);
