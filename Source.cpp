@@ -87,6 +87,7 @@ float xpos = 240;
 float ypos = 20;
 int shipSize = 20;
 int health = 5;
+int points = 0;
 
 // asteroid variables
 int maxAsteroids = 20;
@@ -244,7 +245,7 @@ void draw() {
         a->pos.y -= a->speed; // move down
         a->angle += a->speed; // rotate
 
-        //player, asteroid -- do similar for bullets / asteroids
+        //player, asteroid -- do similar for bullets / asteroids -- only works at a certain ypos
         if (boxcirclecollision(getextents(0, xpos + xpos / 2, xpos / 2, ypos + ypos / 2, ypos / 2), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
             //decr health
             health--;
