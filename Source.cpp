@@ -86,6 +86,7 @@ float playerSpeed = 1;
 float xpos = 240;
 float ypos = 20;
 int shipSize = 20;
+int health = 5;
 
 // asteroid variables
 int maxAsteroids = 20;
@@ -121,24 +122,56 @@ void drawasteroid(vector color) {
     glFlush();
 } // drawasteroid
 
-//bool Collision2D::BoxCircleCheck(Box2D box, Circle circle)
-//{
-//    Vector2 distance = circle.center - box.center;
-//
-//    // check the x axis distance
-//    if (fabsf(distance.x) > (box.extents.x + circle.radius))
-//        return false;
-//
-//    // check the y axis distance
-//    if (fabsf(distance.y) > (box.extents.y + circle.radius))
-//        return false;
-//
-//    // straight line distance from 
-//    if (distance.Length() > (box.extents.Length() + circle.radius))
-//        return false;
-//
-//    return true;
-//}
+float getlength(vector v) {
+    return sqrt(v.x * v.x + v.y * v.y);
+} // getlength
+
+//	Extents are 1/2 width and height of the transformed object
+vector getextents(float angle, float right, float left, float top, float bottom)
+{
+    vector extents(
+        (right - left) * 0.5f,
+        (bottom - top) * 0.5f,
+        0
+    );
+
+    // need to adjust it for rotation
+    if (angle != 0)
+    {
+        float cosTheta = cosf(angle);
+        float sinTheta = sinf(angle);
+
+        vector rotated = vector(
+            extents.x * cosTheta - extents.y * sinTheta,
+            extents.x * sinTheta + extents.y * cosTheta,
+            0
+        );
+
+        extents.x = fabsf(rotated.x);
+        extents.y = fabsf(rotated.y);
+    }
+
+    return extents;
+} // getextents
+
+bool boxcirclecollision(vector boxExtents, float radius, vector boxPos, vector circlePos)
+{
+    vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, circlePos.z - boxPos.z }; // centers are the objects position
+
+    // check the x axis distance
+    if (fabsf(distance.x) > (boxExtents.x + radius))
+        return false;
+
+    // check the y axis distance
+    if (fabsf(distance.y) > (boxExtents.y + radius))
+        return false;
+
+    // straight line distance from 
+    if (getlength(distance) > (getlength(boxExtents) + radius))
+        return false;
+
+    return true;
+} // boxcirclecollision
 
 float randomfloat(int min, int max) {
     return (float)rand() / RAND_MAX * (max - min) + min;
@@ -211,6 +244,13 @@ void draw() {
         a->pos.y -= a->speed; // move down
         a->angle += a->speed; // rotate
 
+        //player, asteroid -- do similar for bullets / asteroids
+        if (boxcirclecollision(getextents(0, xpos + xpos / 2, xpos / 2, ypos + ypos / 2, ypos / 2), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
+            //decr health
+            health--;
+            std::cout << "health: " << health << std::endl;
+        }
+
         glPushMatrix();
         glTranslatef(a->pos.x, a->pos.y, 0);
         glRotatef(a->angle, 0, 0, 1);
@@ -243,12 +283,6 @@ void draw() {
         drawsquare(bulletSize);
         glPopMatrix();
     }
-
-    //if (Collision2D::BoxCircleCheck(paddleCollision, ballCollision)) {
-    //    ballCollision.center -= ballVelocity * deltaTime;
-    //    pos = Collision2D::ReflectCircleBox(ballCollision, ballVelocity, deltaTime, paddleCollision);
-    //    ballSprite.SetPosition(pos);
-    //}
     
     glutSwapBuffers();
 } // draw
