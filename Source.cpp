@@ -245,11 +245,15 @@ void draw() {
         a->pos.y -= a->speed; // move down
         a->angle += a->speed; // rotate
 
-        //player, asteroid -- do similar for bullets / asteroids -- i was dum
+        //player, asteroid -- do similar for bullets / asteroids -- still sort of jank
         if (boxcirclecollision(getextents(0, 20, 0, 20, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
             //decr health
             health--;
             std::cout << "health: " << health << std::endl;
+            if (health <= 0) {
+                health = 0;
+                std::cout << "lost" << std::endl;
+            }
         }
 
         glPushMatrix();
