@@ -24,12 +24,56 @@
 #include <freeglut.h>
 #include <FreeImage.h>
 #include <iostream>
+#include <vector>
 
+struct vector {
+    float x;
+    float y;
+    float z;
+
+    vector() {
+        // default
+    }
+
+    vector(float _x, float _y, float _z)
+    {
+        x = _x;
+        y = _y;
+        z = _z;
+    }
+}; // vector
+
+struct asteroid{
+    vector pos;
+    float speed;
+    vector color;
+    float size;
+    float angle;
+
+    asteroid() {
+        // default
+    }
+
+    asteroid(vector _pos, float _speed, vector _color, float _size, float _angle)
+    {
+        pos = _pos;
+        speed = _speed;
+        color = _color;
+        size = _size;
+        angle = _angle;
+    }
+}; // asteroid
+
+// player variables
 float playerSpeed = 1;
 float xpos = 0.0;
 float ypos = 0.0;
 float startingPos = -200;
-float angle = 0.0;
+
+// asteroid variables
+int maxAsteroids = 20;
+int lifetime = 400;
+std::vector<asteroid> asteroids;
 
 void drawship() {
     glColor3f(1.0, 1.0, 1.0);
@@ -45,8 +89,8 @@ void drawship() {
     glFlush();
 } // drawcube
 
-void drawasteroid() {
-    glColor3f(1.0, 1.0, 1.0);
+void drawasteroid(vector color) {
+    glColor3f(color.x, color.y, color.z);
     glMatrixMode(GL_MODELVIEW);
 
     glBegin(GL_POLYGON);
@@ -76,6 +120,23 @@ void drawasteroid() {
 //    return true;
 //}
 
+float randomfloat(int min, int max) {
+    return (float)rand() / RAND_MAX * (max - min) + min;
+} // randomfloat
+
+void createAsteroid(){
+    asteroid a;
+
+    vector color{ randomfloat(0, 1), randomfloat(0, 1), randomfloat(0, 1) };
+    vector pos = { randomfloat(0, 500), 510, 0 }; // 510 -- above the screen
+    float speed = randomfloat(1, 10);
+    float size = randomfloat(1, 3);
+    float angle = 0;
+
+    a = { pos, speed, color, size, angle};
+    asteroids.push_back(a);
+} // createasteroid
+
 void draw() {
     Sleep(10);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -95,18 +156,34 @@ void draw() {
         ypos = ypos - playerSpeed;
     }
 
+    //player
     glPushMatrix();
     glTranslatef(xpos, startingPos + ypos, 0);
     drawship();
     glPopMatrix();
 
-    glPushMatrix();
-    glTranslatef(250, 200, 0); // get random pos + make list of asteroids
-    glRotatef(angle, 0, 0, 1);
-    drawasteroid();
-    glPopMatrix();
+    if (asteroids.size() < maxAsteroids) {
+        createAsteroid();
+    }
+    
+    // draw asteroids
+    for (int i = 0; i < asteroids.size(); i++) {
+        asteroid* a = &asteroids.at(i);
 
-    angle++;
+        if (a->pos.y <= -500) {
+            asteroids.erase(asteroids.begin() + i);
+        }
+
+        a->pos.y -= a->speed; // move down
+        a->angle += a->speed; // rotate
+
+        glPushMatrix();
+        glTranslatef(a->pos.x, a->pos.y, 0);
+        glRotatef(a->angle, 0, 0, 1);
+        glScalef(a->size, a->size, a->size);
+        drawasteroid(a->color);
+        glPopMatrix();
+    }
 
     //if (Collision2D::BoxCircleCheck(paddleCollision, ballCollision)) {
     //    ballCollision.center -= ballVelocity * deltaTime;
