@@ -23,6 +23,7 @@
 #include <FreeImage.h>
 #include <iostream>
 #include <vector>
+#include <string>
 
 struct vector {
     float x;
@@ -41,7 +42,7 @@ struct vector {
     }
 }; // vector
 
-struct asteroid{
+struct asteroid {
     vector pos;
     float speed;
     vector color;
@@ -89,13 +90,20 @@ int shipSize = 20;
 int health = 5;
 int points = 0;
 
+bool gameOver = false;
+
 // asteroid variables
-int maxAsteroids = 20;
+int maxAsteroids = 7;
 std::vector<asteroid> asteroids;
 
 // bullet variables
 int bulletSize = 10;
 std::vector<bullet> bullets;
+
+void Reset()
+{
+
+}
 
 void drawsquare(int size) {
     glColor3f(1.0, 1.0, 1.0);
@@ -185,23 +193,27 @@ void createbullet() {
     float speed = 1;
     float angle = 0;
 
-    bool rotPos = (int)randomfloat(0,2);
-    std::cout << rotPos << std::endl;
+    bool rotPos = (int)randomfloat(0, 2);
+
+    //bool rotPos = ;
+
+
+    //std::cout << rotPos << std::endl;
 
     b = { pos, speed, angle, rotPos };
     bullets.push_back(b);
 } // createbullet
 
-void createasteroid(){
+void createasteroid() {
     asteroid a;
 
     vector color{ randomfloat(0, 1), randomfloat(0, 1), randomfloat(0, 1) };
-    vector pos = { randomfloat(0, (float)glutGet(GLUT_WINDOW_WIDTH)), (float)glutGet(GLUT_WINDOW_HEIGHT)+10, 0 }; // 510 -- above the screen
-    float speed = randomfloat(1, 10);
+    vector pos = { randomfloat(0, (float)glutGet(GLUT_WINDOW_WIDTH)), (float)glutGet(GLUT_WINDOW_HEIGHT) + 10, 0 }; // 510 -- above the screen
+    float speed = randomfloat(1, 2);
     float size = randomfloat(10, 30);
     float angle = 0;
 
-    a = { pos, speed, color, size, angle};
+    a = { pos, speed, color, size, angle };
     asteroids.push_back(a);
 } // createasteroid
 
@@ -211,16 +223,16 @@ void draw() {
 
     glMatrixMode(GL_MODELVIEW);
 
-    if (GetKeyState('A') & 0x8000) { // left
+    if ((GetKeyState('A') & 0x8000) && xpos > 0) { // left
         xpos = xpos - playerSpeed;
     }
-    if (GetKeyState('D') & 0x8000) { // right
+    if ((GetKeyState('D') & 0x8000) && xpos < 470) { // right
         xpos = xpos + playerSpeed;
     }
-    if (GetKeyState('W') & 0x8000) { // up
+    if ((GetKeyState('W') & 0x8000) && ypos < 470) { // up
         ypos = ypos + playerSpeed;
     }
-    if (GetKeyState('S') & 0x8000) { // down
+    if ((GetKeyState('S') & 0x8000) && ypos > 0) { // down
         ypos = ypos - playerSpeed;
     }
 
@@ -233,7 +245,7 @@ void draw() {
     if (asteroids.size() < maxAsteroids) {
         createasteroid();
     }
-    
+
     // draw asteroids
     for (int i = 0; i < asteroids.size(); i++) {
         asteroid* a = &asteroids.at(i);
@@ -248,6 +260,7 @@ void draw() {
         // player, asteroid -- do similar for bullets / asteroids -- still sort of jank
         if (boxcirclecollision(getextents(0, shipSize, 0, shipSize, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
             // decr health
+            asteroids.erase(asteroids.begin() + i);
             health--;
             std::cout << "health: " << health << std::endl;
             if (health <= 0) {
@@ -266,6 +279,8 @@ void draw() {
     }
 
     // draw bullets
+
+
     for (int i = 0; i < bullets.size(); i++) {
         bullet* b = &bullets.at(i);
 
@@ -284,13 +299,14 @@ void draw() {
         }
 
         // checking asteroid collisions -- idk if i can do this cleaner???
-        for (int i = 0; i < asteroids.size(); i++) {
-            asteroid* a = &asteroids.at(i);
+        for (int j = 0; j < asteroids.size(); j++) {
+            asteroid* a = &asteroids.at(j);
             if (boxcirclecollision(getextents(b->angle, bulletSize, 0, bulletSize, 0), a->size / 2, b->pos, a->pos)) {
                 // destroy asteroid
-                asteroids.erase(asteroids.begin() + i);
+                bullets.erase(bullets.begin() + i);
+                asteroids.erase(asteroids.begin() + j);
                 // incr points
-                points+=10;
+                points += 10;
                 std::cout << "points: " << points << std::endl;
                 if (points >= 100) {
                     points = 100;
@@ -301,12 +317,25 @@ void draw() {
         } // end for
 
         glPushMatrix();
-        glTranslatef(b->pos.x + bulletSize/2, b->pos.y, 0); // + half bulletSize for centering
+        glTranslatef(b->pos.x + bulletSize / 2, b->pos.y, 0); // + half bulletSize for centering
         glRotatef(b->angle, 0, 0, 1);
         drawsquare(bulletSize);
         glPopMatrix();
     }
-    
+
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);  //RGBA values of text color
+    glRasterPos2i(200, 460);            //Top left corner of text
+
+    std::string score = "SCORE:" + std::to_string(points);
+
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)score.c_str());
+
+    glRasterPos2i(210, 440);            //Top left corner of text
+
+    std::string hp = "HP:" + std::to_string(health);
+
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)hp.c_str());
+
     glutSwapBuffers();
 } // draw
 
