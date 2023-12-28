@@ -223,120 +223,140 @@ void draw() {
 
     glMatrixMode(GL_MODELVIEW);
 
-    if ((GetKeyState('A') & 0x8000) && xpos > 0) { // left
-        xpos = xpos - playerSpeed;
-    }
-    if ((GetKeyState('D') & 0x8000) && xpos < 470) { // right
-        xpos = xpos + playerSpeed;
-    }
-    if ((GetKeyState('W') & 0x8000) && ypos < 470) { // up
-        ypos = ypos + playerSpeed;
-    }
-    if ((GetKeyState('S') & 0x8000) && ypos > 0) { // down
-        ypos = ypos - playerSpeed;
-    }
+    if (!gameOver) {
 
-    //player
-    glPushMatrix();
-    glTranslatef(xpos, ypos, 0);
-    drawsquare(shipSize);
-    glPopMatrix();
-
-    if (asteroids.size() < maxAsteroids) {
-        createasteroid();
-    }
-
-    // draw asteroids
-    for (int i = 0; i < asteroids.size(); i++) {
-        asteroid* a = &asteroids.at(i);
-
-        if (a->pos.y <= -1 * glutGet(GLUT_WINDOW_HEIGHT)) {
-            asteroids.erase(asteroids.begin() + i);
+        if ((GetKeyState('A') & 0x8000) && xpos > 0) { // left
+            xpos = xpos - playerSpeed;
+        }
+        if ((GetKeyState('D') & 0x8000) && xpos < 470) { // right
+            xpos = xpos + playerSpeed;
+        }
+        if ((GetKeyState('W') & 0x8000) && ypos < 470) { // up
+            ypos = ypos + playerSpeed;
+        }
+        if ((GetKeyState('S') & 0x8000) && ypos > 0) { // down
+            ypos = ypos - playerSpeed;
         }
 
-        a->pos.y -= a->speed; // move down
-        a->angle += a->speed; // rotate
-
-        // player, asteroid -- do similar for bullets / asteroids -- still sort of jank
-        if (boxcirclecollision(getextents(0, shipSize, 0, shipSize, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
-            // decr health
-            asteroids.erase(asteroids.begin() + i);
-            health--;
-            std::cout << "health: " << health << std::endl;
-            if (health <= 0) {
-                health = 0;
-                std::cout << "lost" << std::endl;
-                // end game idk how
-            }
-        } // end if
-
+        //player
         glPushMatrix();
-        glTranslatef(a->pos.x, a->pos.y, 0);
-        glRotatef(a->angle, 0, 0, 1);
-        glScalef(a->size, a->size, a->size);
-        drawasteroid(a->color);
+        glTranslatef(xpos, ypos, 0);
+        drawsquare(shipSize);
         glPopMatrix();
-    }
 
-    // draw bullets
-
-
-    for (int i = 0; i < bullets.size(); i++) {
-        bullet* b = &bullets.at(i);
-
-        if (b->pos.y >= 500) {
-            bullets.erase(bullets.begin() + i);
+        if (asteroids.size() < maxAsteroids) {
+            createasteroid();
         }
 
-        b->pos.y += b->speed;
+        // draw asteroids
+        for (int i = 0; i < asteroids.size(); i++) {
+            asteroid* a = &asteroids.at(i);
 
-        // some rotate the other way
-        if (b->rotPos) {
-            b->angle += b->speed;
-        }
-        else {
-            b->angle -= b->speed;
-        }
+            if (a->pos.y <= -1 * glutGet(GLUT_WINDOW_HEIGHT)) {
+                asteroids.erase(asteroids.begin() + i);
+            }
 
-        // checking asteroid collisions -- idk if i can do this cleaner???
-        for (int j = 0; j < asteroids.size(); j++) {
-            asteroid* a = &asteroids.at(j);
-            if (boxcirclecollision(getextents(b->angle, bulletSize, 0, bulletSize, 0), a->size / 2, b->pos, a->pos)) {
-                // destroy asteroid
-                bullets.erase(bullets.begin() + i);
-                asteroids.erase(asteroids.begin() + j);
-                // incr points
-                points += 10;
-                std::cout << "points: " << points << std::endl;
-                if (points >= 100) {
-                    points = 100;
-                    std::cout << "won" << std::endl;
-                    // end game idk how
+            a->pos.y -= a->speed; // move down
+            a->angle += a->speed; // rotate
+
+            // player, asteroid -- do similar for bullets / asteroids -- still sort of jank
+            if (boxcirclecollision(getextents(0, shipSize, 0, shipSize, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
+                // decr health
+                asteroids.erase(asteroids.begin() + i);
+                health--;
+                std::cout << "health: " << health << std::endl;
+                if (health <= 0) {
+                    health = 0;
+                    std::cout << "lost" << std::endl;
+
+                    // end game
+                    gameOver = true;
+
+                    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);  //RGBA values of text color
+                    glRasterPos2i(10, 10);            //Top left corner of text
+
+                    std::string loseStr = "Lost!";
+
+                    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)loseStr.c_str());
                 }
+            } // end if
+
+            glPushMatrix();
+            glTranslatef(a->pos.x, a->pos.y, 0);
+            glRotatef(a->angle, 0, 0, 1);
+            glScalef(a->size, a->size, a->size);
+            drawasteroid(a->color);
+            glPopMatrix();
+        }
+
+        // draw bullets
+        for (int i = 0; i < bullets.size(); i++) {
+            bullet* b = &bullets.at(i);
+
+            if (b->pos.y >= 500) {
+                bullets.erase(bullets.begin() + i);
             }
-        } // end for
 
-        glPushMatrix();
-        glTranslatef(b->pos.x + bulletSize / 2, b->pos.y, 0); // + half bulletSize for centering
-        glRotatef(b->angle, 0, 0, 1);
-        drawsquare(bulletSize);
-        glPopMatrix();
-    }
+            b->pos.y += b->speed;
 
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);  //RGBA values of text color
-    glRasterPos2i(200, 460);            //Top left corner of text
+            // some rotate the other way
+            if (b->rotPos) {
+                b->angle += b->speed;
+            }
+            else {
+                b->angle -= b->speed;
+            }
 
-    std::string score = "SCORE:" + std::to_string(points);
+            // checking asteroid collisions -- idk if i can do this cleaner???
+            for (int j = 0; j < asteroids.size(); j++) {
+                asteroid* a = &asteroids.at(j);
+                if (boxcirclecollision(getextents(b->angle, bulletSize, 0, bulletSize, 0), a->size / 2, b->pos, a->pos)) {
+                    // destroy asteroid
+                    bullets.erase(bullets.begin() + i);
+                    asteroids.erase(asteroids.begin() + j);
+                    // incr points
+                    points += 10;
+                    std::cout << "points: " << points << std::endl;
+                    if (points >= 100) {
+                        points = 100;
+                        std::cout << "won" << std::endl;
 
-    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)score.c_str());
+                        // end game
+                        gameOver = true;
 
-    glRasterPos2i(210, 440);            //Top left corner of text
+                        glColor4f(0.0f, 1.0f, 0.0f, 1.0f);  //RGBA values of text color
+                        glRasterPos2i(10, 10);            //Top left corner of text
 
-    std::string hp = "HP:" + std::to_string(health);
+                        std::string winStr = "Won!";
 
-    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)hp.c_str());
+                        glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)winStr.c_str());
+                    }
+                }
+            } // end for
 
-    glutSwapBuffers();
+            glPushMatrix();
+            glTranslatef(b->pos.x + bulletSize / 2, b->pos.y, 0); // + half bulletSize for centering
+            glRotatef(b->angle, 0, 0, 1);
+            drawsquare(bulletSize);
+            glPopMatrix();
+        }
+
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);  //RGBA values of text color
+        glRasterPos2i(200, 460);            //Top left corner of text
+
+        std::string score = "SCORE: " + std::to_string(points);
+
+        glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)score.c_str());
+
+        glRasterPos2i(210, 430);            //Top left corner of text
+
+        std::string hp = "HP: " + std::to_string(health);
+
+        glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)hp.c_str());
+
+        glutSwapBuffers();
+    } // end gameover if
+
 } // draw
 
 void keyboard(unsigned char key, int x, int y) {
