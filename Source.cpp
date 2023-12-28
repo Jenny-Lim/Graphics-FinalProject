@@ -375,8 +375,10 @@ void mouse(int btn, int state, int x, int y) {
     if (state == GLUT_DOWN) {
         if (btn == GLUT_LEFT_BUTTON) {
             // shoot
-            std::cout << "shot" << std::endl;
-            createbullet();
+            if (!gameOver) {
+                std::cout << "shot" << std::endl;
+                createbullet();
+            }
         }
         else if (btn == GLUT_RIGHT_BUTTON) {
             // idk
