@@ -163,7 +163,7 @@ vector getextents(float angle, float right, float left, float top, float bottom)
     return extents;
 } // getextents
 
-bool boxcirclecollision(vector boxExtents, float radius, vector boxPos, vector circlePos)
+bool boxcirclecollision(vector boxExtents, float radius, vector boxPos, vector circlePos) // collisions are kind of jank
 {
     vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, 0 }; // centers are the objects position
 
@@ -259,7 +259,7 @@ void draw() {
             a->pos.y -= a->speed; // move down
             a->angle += a->speed; // rotate
 
-            // player, asteroid -- do similar for bullets / asteroids -- still sort of jank
+            // player, asteroid
             if (boxcirclecollision(getextents(0, shipSize, 0, shipSize, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
                 // decr health
                 asteroids.erase(asteroids.begin() + i);
@@ -307,7 +307,7 @@ void draw() {
                 b->angle -= b->speed;
             }
 
-            // checking asteroid collisions -- idk if i can do this cleaner???
+            // checking asteroid collisions
             for (int j = 0; j < asteroids.size(); j++) {
                 asteroid* a = &asteroids.at(j);
                 if (boxcirclecollision(getextents(b->angle, bulletSize, 0, bulletSize, 0), a->size / 2, b->pos, a->pos)) {
