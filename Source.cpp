@@ -195,11 +195,6 @@ void createbullet() {
 
     bool rotPos = (int)randomfloat(0, 2);
 
-    //bool rotPos = ;
-
-
-    //std::cout << rotPos << std::endl;
-
     b = { pos, speed, angle, rotPos };
     bullets.push_back(b);
 } // createbullet
@@ -355,6 +350,7 @@ void draw() {
         glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)hp.c_str());
 
         glutSwapBuffers();
+
     } // end gameover if
 
 } // draw
