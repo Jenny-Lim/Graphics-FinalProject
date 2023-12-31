@@ -140,7 +140,7 @@ vector getextents(float angle, float right, float left, float top, float bottom)
 {
     vector extents(
         (right - left) * 0.5f,
-        (top-bottom) * 0.5f,
+        (top - bottom) * 0.5f, // 0,0 is at bottom left
         0
     );
 
