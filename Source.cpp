@@ -163,7 +163,7 @@ vector getextents(float angle, float right, float left, float top, float bottom)
     return extents;
 } // getextents
 
-bool boxcirclecollision(vector boxExtents, float radius, vector boxPos, vector circlePos) // collisions are kind of jank
+bool boxcirclecollision(vector boxExtents, float radius, vector boxPos, vector circlePos)
 {
     vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, 0 }; // centers are the objects position
 
