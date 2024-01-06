@@ -386,7 +386,7 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitWindowSize(500, 500);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-    glutCreateWindow("Asteroid Shooter");
+    glutCreateWindow("Meteor Shoot");
 
     glutMouseFunc(mouse);
     glutKeyboardFunc(keyboard);
