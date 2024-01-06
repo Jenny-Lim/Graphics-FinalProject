@@ -12,7 +12,7 @@
 // Source.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-// Jenny Lim (6978118), Patrick Leonard (stud#)
+// Jenny Lim, Patrick Leonard
 
 #define _USE_MATH_DEFINES
 
