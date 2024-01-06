@@ -124,8 +124,8 @@ void drawasteroid(vector color) {
     glMatrixMode(GL_MODELVIEW);
 
     glBegin(GL_POLYGON);
-    for (int i = 0; i < 6; i++) {
-        glVertex2f(sin(i / 6.0 * 2 * M_PI), cos(i / 6.0 * 2 * M_PI));
+    for (int i = 0; i < 8; i++) {
+        glVertex2f(sin(i / 8.0 * 2 * M_PI), cos(i / 8.0 * 2 * M_PI));
     }
     glEnd();
     glFlush();
@@ -135,49 +135,48 @@ float getlength(vector v) {
     return sqrt(v.x * v.x + v.y * v.y);
 } // getlength
 
-//	Extents are 1/2 width and height of the transformed object
-vector getextents(float angle, float right, float left, float top, float bottom)
+vector getbounds(float angle, float right, float left, float top, float bottom)
 {
-    vector extents(
+    vector bounds( // 1/2 width and height
         (right - left) * 0.5f,
         (top - bottom) * 0.5f, // 0,0 is at bottom left
         0
     );
 
-    // need to adjust it for rotation
+    // if the object is rotated
     if (angle != 0)
     {
-        float cosTheta = cosf(angle);
-        float sinTheta = sinf(angle);
-
         vector rotated = vector(
-            extents.x * cosTheta - extents.y * sinTheta,
-            extents.x * sinTheta + extents.y * cosTheta,
+            bounds.x * cosf(angle) - bounds.y * sinf(angle),
+            bounds.x * sinf(angle) + bounds.y * cosf(angle),
             0
         );
 
-        extents.x = fabsf(rotated.x);
-        extents.y = fabsf(rotated.y);
+        bounds.x = fabsf(rotated.x);
+        bounds.y = fabsf(rotated.y);
     }
 
-    return extents;
-} // getextents
+    return bounds;
+} // getbounds
 
-bool boxcirclecollision(vector boxExtents, float radius, vector boxPos, vector circlePos)
+bool boxcirclecollision(vector boxBounds, float radius, vector boxPos, vector circlePos)
 {
-    vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, 0 }; // centers are the objects position
+    vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, 0 }; // distance of box center (pos) to circle center
 
-    // check the x axis distance
-    if (fabsf(distance.x) > (boxExtents.x + radius))
+    // if that distance is outside on the xaxis
+    if (fabsf(distance.x) > (boxBounds.x + radius)) {
         return false;
+    }
 
-    // check the y axis distance
-    if (fabsf(distance.y) > (boxExtents.y + radius))
+    // if that distance is outside on the yaxis
+    if (fabsf(distance.y) > (boxBounds.y + radius)) {
         return false;
+    }
 
-    // straight line distance from 
-    if (getlength(distance) > (getlength(boxExtents) + radius))
+    // account for corners
+    if (getlength(distance) > (getlength(boxBounds) + radius)) {
         return false;
+    }
 
     return true;
 } // boxcirclecollision
@@ -255,7 +254,7 @@ void draw() {
             a->angle += a->speed; // rotate
 
             // player, asteroid
-            if (boxcirclecollision(getextents(0, shipSize, 0, shipSize, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
+            if (boxcirclecollision(getbounds(0, shipSize, 0, shipSize, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
                 // decr health
                 asteroids.erase(asteroids.begin() + i);
                 health--;
@@ -305,7 +304,7 @@ void draw() {
             // checking asteroid collisions
             for (int j = 0; j < asteroids.size(); j++) {
                 asteroid* a = &asteroids.at(j);
-                if (boxcirclecollision(getextents(b->angle, bulletSize, 0, bulletSize, 0), a->size / 2, b->pos, a->pos)) {
+                if (boxcirclecollision(getbounds(b->angle, bulletSize, 0, bulletSize, 0), a->size / 2, b->pos, a->pos)) {
                     // destroy asteroid
                     bullets.erase(bullets.begin() + i);
                     asteroids.erase(asteroids.begin() + j);
