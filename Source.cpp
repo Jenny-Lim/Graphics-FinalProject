@@ -147,7 +147,7 @@ vector getbounds(float angle, float right, float left, float top, float bottom)
         0
     );
 
-    // if the object is rotated
+    // if the object is rotated -- rotate vector by angle
     if (angle != 0)
     {
         vector rotated = vector(
