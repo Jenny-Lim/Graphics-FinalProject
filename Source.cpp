@@ -100,10 +100,14 @@ std::vector<asteroid> asteroids;
 int bulletSize = 10;
 std::vector<bullet> bullets;
 
-void Reset()
+void reset()
 {
-
-}
+    gameOver = false;
+    asteroids.clear();
+    bullets.clear();
+    health = 0;
+    points = 0;
+} // reset
 
 void drawsquare(int size) {
     glColor3f(1.0, 1.0, 1.0);
@@ -258,10 +262,10 @@ void draw() {
                 // decr health
                 asteroids.erase(asteroids.begin() + i);
                 health--;
-                std::cout << "health: " << health << std::endl;
+                //std::cout << "health: " << health << std::endl;
                 if (health <= 0) {
                     health = 0;
-                    std::cout << "lost" << std::endl;
+                    //std::cout << "lost" << std::endl;
 
                     // end game
                     gameOver = true;
@@ -310,10 +314,10 @@ void draw() {
                     asteroids.erase(asteroids.begin() + j);
                     // incr points
                     points += 10;
-                    std::cout << "points: " << points << std::endl;
+                    //std::cout << "points: " << points << std::endl;
                     if (points >= 100) {
                         points = 100;
-                        std::cout << "won" << std::endl;
+                        //std::cout << "won" << std::endl;
 
                         // end game
                         gameOver = true;
@@ -362,8 +366,16 @@ void keyboard(unsigned char key, int x, int y) {
     case 'Q':
         exit(0);
         break;
+    case 'r':
+    case 'R':
+        reset();
+        break;
     }
 } // keyboard
+
+void show_keys() {
+    std::cout << "|| R: reset || Q: quit ||" << std::endl;
+} // show_keys
 
 void mouse(int btn, int state, int x, int y) {
 
@@ -371,13 +383,13 @@ void mouse(int btn, int state, int x, int y) {
         if (btn == GLUT_LEFT_BUTTON) {
             // shoot
             if (!gameOver) {
-                std::cout << "shot" << std::endl;
+                //std::cout << "shot" << std::endl;
                 createbullet();
             }
         }
-        else if (btn == GLUT_RIGHT_BUTTON) {
-            // idk
-        }
+        //else if (btn == GLUT_RIGHT_BUTTON) {
+        //    // idk
+        //}
     }
 } // mouse
 
@@ -387,7 +399,7 @@ int main(int argc, char** argv) {
     glutInitWindowSize(500, 500);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutCreateWindow("Meteor Shoot");
-
+    show_keys();
     glutMouseFunc(mouse);
     glutKeyboardFunc(keyboard);
 
