@@ -24,6 +24,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <mmsystem.h>
 
 struct vector {
     float x;
@@ -262,6 +263,7 @@ void draw() {
                 // decr health
                 asteroids.erase(asteroids.begin() + i);
                 health--;
+                PlaySound(TEXT("hurt.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_NOSTOP);
                 //std::cout << "health: " << health << std::endl;
                 if (health <= 0) {
                     health = 0;
@@ -314,6 +316,7 @@ void draw() {
                     asteroids.erase(asteroids.begin() + j);
                     // incr points
                     points += 10;
+                    PlaySound(TEXT("explode.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_NOSTOP);
                     //std::cout << "points: " << points << std::endl;
                     if (points >= 100) {
                         points = 100;
