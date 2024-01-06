@@ -163,7 +163,7 @@ vector getbounds(float angle, float right, float left, float top, float bottom)
     return bounds;
 } // getbounds
 
-bool boxcirclecollision(vector boxBounds, float radius, vector boxPos, vector circlePos)
+bool collision(vector boxBounds, float radius, vector boxPos, vector circlePos)
 {
     vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, 0 }; // distance of box center (pos) to circle center
 
@@ -258,7 +258,7 @@ void draw() {
             a->angle += a->speed; // rotate
 
             // player, asteroid
-            if (boxcirclecollision(getbounds(0, shipSize, 0, shipSize, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
+            if (collision(getbounds(0, shipSize, 0, shipSize, 0), a->size / 2, vector{ xpos, ypos, 0 }, a->pos)) {
                 // decr health
                 asteroids.erase(asteroids.begin() + i);
                 health--;
@@ -308,7 +308,7 @@ void draw() {
             // checking asteroid collisions
             for (int j = 0; j < asteroids.size(); j++) {
                 asteroid* a = &asteroids.at(j);
-                if (boxcirclecollision(getbounds(b->angle, bulletSize, 0, bulletSize, 0), a->size / 2, b->pos, a->pos)) {
+                if (collision(getbounds(b->angle, bulletSize, 0, bulletSize, 0), a->size / 2, b->pos, a->pos)) {
                     // destroy asteroid
                     bullets.erase(bullets.begin() + i);
                     asteroids.erase(asteroids.begin() + j);
