@@ -105,7 +105,7 @@ void reset()
     gameOver = false;
     asteroids.clear();
     bullets.clear();
-    health = 0;
+    health = 5;
     points = 0;
 } // reset
 
