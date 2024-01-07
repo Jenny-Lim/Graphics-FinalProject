@@ -404,7 +404,7 @@ int main(int argc, char** argv) {
     show_keys();
     glutMouseFunc(mouse);
     glutKeyboardFunc(keyboard);
-
+    srand(time(0));
     glutDisplayFunc(draw);
     glutIdleFunc(draw);
 
