@@ -141,20 +141,13 @@ float getlength(vector v) { // returns euclidian distance
 
 vector getbounds(float angle, float right, float left, float top, float bottom) // returns bounds of a box
 {
-    vector bounds( // 1/2 width and height
-        (right - left) * 0.5f,
-        (top - bottom) * 0.5f, // 0,0 is at bottom left
-        0
-    );
+    // 1/2 width and height -- 0,0 is at bottom left
+    vector bounds( (right - left) * 0.5f, (top - bottom) * 0.5f, 0 );
 
     // if the object is rotated -- rotate vector by angle
     if (angle != 0)
     {
-        vector rotated = vector(
-            bounds.x * cosf(angle) - bounds.y * sinf(angle),
-            bounds.x * sinf(angle) + bounds.y * cosf(angle),
-            0
-        );
+        vector rotated = vector( bounds.x * cosf(angle) - bounds.y * sinf(angle), bounds.x * sinf(angle) + bounds.y * cosf(angle), 0 );
 
         bounds.x = fabsf(rotated.x);
         bounds.y = fabsf(rotated.y);
@@ -167,18 +160,8 @@ bool collision(vector boxBounds, float radius, vector boxPos, vector circlePos) 
 {
     vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, 0 }; // distance of box center (pos) to circle center
 
-    // if that distance is outside on the xaxis
-    if (fabsf(distance.x) > (boxBounds.x + radius)) {
-        return false;
-    }
-
-    // if that distance is outside on the yaxis
-    if (fabsf(distance.y) > (boxBounds.y + radius)) {
-        return false;
-    }
-
-    // account for corners
-    if (getlength(distance) > (getlength(boxBounds) + radius)) {
+    // if that distance is outside on the axes + accounting for corners
+    if (fabsf(distance.x) > (boxBounds.x + radius) || fabsf(distance.y) > (boxBounds.y + radius) || getlength(distance) > (getlength(boxBounds) + radius)) {
         return false;
     }
 
