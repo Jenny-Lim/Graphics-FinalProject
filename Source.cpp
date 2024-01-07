@@ -43,7 +43,7 @@ struct vector {
     }
 }; // vector
 
-struct asteroid {
+struct asteroid { // asteroid data structure
     vector pos;
     float speed;
     vector color;
@@ -64,7 +64,7 @@ struct asteroid {
     }
 }; // asteroid
 
-struct bullet {
+struct bullet { // bullet data structure
     vector pos;
     float speed;
     float angle;
@@ -101,8 +101,7 @@ std::vector<asteroid> asteroids;
 int bulletSize = 10;
 std::vector<bullet> bullets;
 
-void reset()
-{
+void reset() { // reset
     gameOver = false;
     asteroids.clear();
     bullets.clear();
@@ -110,7 +109,7 @@ void reset()
     points = 0;
 } // reset
 
-void drawsquare(int size) {
+void drawsquare(int size) { // draw player / bullets
     glColor3f(1.0, 1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
 
@@ -122,9 +121,9 @@ void drawsquare(int size) {
 
     glEnd();
     glFlush();
-} // drawcube
+} // drawsquare
 
-void drawasteroid(vector color) {
+void drawasteroid(vector color) { // draw asteroid
     glColor3f(color.x, color.y, color.z);
     glMatrixMode(GL_MODELVIEW);
 
@@ -136,11 +135,11 @@ void drawasteroid(vector color) {
     glFlush();
 } // drawasteroid
 
-float getlength(vector v) {
+float getlength(vector v) { // returns euclidian distance
     return sqrt(v.x * v.x + v.y * v.y);
 } // getlength
 
-vector getbounds(float angle, float right, float left, float top, float bottom)
+vector getbounds(float angle, float right, float left, float top, float bottom) // returns bounds of a box
 {
     vector bounds( // 1/2 width and height
         (right - left) * 0.5f,
@@ -164,7 +163,7 @@ vector getbounds(float angle, float right, float left, float top, float bottom)
     return bounds;
 } // getbounds
 
-bool collision(vector boxBounds, float radius, vector boxPos, vector circlePos)
+bool collision(vector boxBounds, float radius, vector boxPos, vector circlePos) // collision detector
 {
     vector distance = { circlePos.x - boxPos.x, circlePos.y - boxPos.y, 0 }; // distance of box center (pos) to circle center
 
@@ -184,13 +183,13 @@ bool collision(vector boxBounds, float radius, vector boxPos, vector circlePos)
     }
 
     return true;
-} // boxcirclecollision
+} // collision
 
-float randomfloat(int min, int max) {
+float randomfloat(int min, int max) { // random float generation
     return (float)rand() / RAND_MAX * (max - min) + min;
 } // randomfloat
 
-void createbullet() {
+void createbullet() { // bullet initialization
     bullet b;
 
     vector pos = { xpos, ypos, 0 };
@@ -203,7 +202,7 @@ void createbullet() {
     bullets.push_back(b);
 } // createbullet
 
-void createasteroid() {
+void createasteroid() { // asteroid initialization
     asteroid a;
 
     vector color{ randomfloat(0, 1), randomfloat(0, 1), randomfloat(0, 1) };
@@ -216,7 +215,7 @@ void createasteroid() {
     asteroids.push_back(a);
 } // createasteroid
 
-void draw() {
+void draw() { // update
     Sleep(10);
     glClear(GL_COLOR_BUFFER_BIT);
 
